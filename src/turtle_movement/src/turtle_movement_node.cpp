@@ -1,5 +1,8 @@
 #include "tf/transform_broadcaster.h"
+
+#include "ros/console.h"
 #include "ros/ros.h"
+
 #include "sensor_msgs/PointCloud2.h"
 #include "sensor_msgs/PointField.h"
 #include "nav_msgs/Odometry.h"
@@ -55,9 +58,9 @@ struct Turtle {
         prev_time = curr_time;
         curr_time = time;
         if ((int)curr_time > (int)prev_time) {
-            cerr << "LOC: " << location.x << ' ' << location.z << " | ORI: " << orientation.x << ' ' << orientation.z << '\n';
+            ROS_INFO("LOC: %f %f | ORI: %f %f", location.x, location.z, orientation.x, orientation.z);
             if (curr_time - camera_moment > 1) {
-                cerr << "No camera\n";
+                ROS_WARN("No camera");
                 camera_image.height = 0;
             }
         }
@@ -75,7 +78,6 @@ struct Turtle {
     }
 
     bool WorthToAnalyse(const Point &p, const Point &lowest) {
-        // cerr << p.x << ' ' << p.y << ' ' << p.z << '\n';
         return (p.y > EPS) && (p.y - lowest.y > EPS) && !isnan(p.x) && !isnan(p.z);
     }
 
@@ -181,7 +183,7 @@ struct Turtle {
             direction = direction.Resize(5);
         }
         in_between_target = location + direction;
-        bool has_an_obstacle = checkObstacles();
+        checkObstacles();
     }
 };
 
@@ -232,7 +234,6 @@ struct LocationCallback {
         swap(new_position.y, new_position.z);
         turtle.location = new_position;
         turtle.orientation = Point(1, 0, 0).Rotate(tf::getYaw(message->pose.pose.orientation));
-        turtle.curr_time = (double)clock() / CLOCKS_PER_SEC;
     }
 };
 
@@ -252,7 +253,7 @@ int main(int argc, char** argv) {
     ros::Subscriber currentLocation = n.subscribe<nav_msgs::Odometry>("/odom", 1000, location_callback);
     ros::Subscriber timeSubscriber = n.subscribe<rosgraph_msgs::Clock>("/clock", 1, TimeCallback);
 
-    cerr << "end subscription\n";
+    ROS_INFO("subscribers registered");
     geometry_msgs::Twist velocityMsg;
     while (ros::ok()) {
         turtle.SetTime(current_time);
@@ -262,6 +263,5 @@ int main(int argc, char** argv) {
         }
         turtleVelocityPub.publish(velocityMsg);
         ros::spinOnce();
-        current_time = (double)clock() / CLOCKS_PER_SEC;
     }
 }
