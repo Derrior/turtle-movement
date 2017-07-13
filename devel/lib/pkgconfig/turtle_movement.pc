@@ -1,0 +1,8 @@
+prefix=/home/z/HSE/First/SummerPractice/turtle-movement/devel
+
+Name: turtle_movement
+Description: Description of turtle_movement
+Version: 0.0.0
+Cflags: -I/home/z/HSE/First/SummerPractice/turtle-movement/src/turtle_movement/include
+Libs: -L/home/z/HSE/First/SummerPractice/turtle-movement/devel/lib -lturtle_movement
+Requires: gazebo_ros roscpp rospy std_msgs message_runtime
