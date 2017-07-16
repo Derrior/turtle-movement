@@ -247,10 +247,10 @@ int main(int argc, char** argv) {
     DestinationPointCallback target_callback(turtle);
     LocationCallback location_callback(turtle);
 
-    ros::Publisher turtleVelocityPub = n.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 1000);
+    ros::Publisher turtleVelocityPub = n.advertise<geometry_msgs::Twist>("/mobile_base/commands/velocity", 1);
     ros::Subscriber turtleCameraRec = n.subscribe<sensor_msgs::PointCloud2>("/camera/depth/points", 1, camera_callback);
     ros::Subscriber targetPoint = n.subscribe<geometry_msgs::Point>("target", 1, target_callback);
-    ros::Subscriber currentLocation = n.subscribe<nav_msgs::Odometry>("/odom", 1000, location_callback);
+    ros::Subscriber currentLocation = n.subscribe<nav_msgs::Odometry>("/odom", 1, location_callback);
     ros::Subscriber timeSubscriber = n.subscribe<rosgraph_msgs::Clock>("/clock", 1, TimeCallback);
 
     ROS_INFO("subscribers registered");
